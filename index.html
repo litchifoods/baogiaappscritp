@@ -270,9 +270,90 @@
     .bq-store-fields { grid-template-columns: 1fr; }
     .bq-title-row .date-group { width: 100%; }
   }
+
+  /* ===== LOGIN OVERLAY ===== */
+  #loginOverlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #1B4332 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Be Vietnam Pro', sans-serif;
+  }
+  #loginOverlay.hidden { display: none !important; }
+  .login-card {
+    background: #fff; border-radius: 20px; padding: 40px 36px 32px;
+    width: 380px; max-width: 95vw;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+    animation: loginPop 0.4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes loginPop { from { opacity:0; transform: scale(.85) translateY(20px); } to { opacity:1; transform: scale(1) translateY(0); } }
+  .login-logo { text-align: center; margin-bottom: 24px; }
+  .login-logo-icon { width: 60px; height: 60px; background: linear-gradient(135deg,#1B4332,#2D6A4F); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 10px; }
+  .login-logo h2 { font-family: 'Playfair Display', serif; font-size: 18px; color: #1B4332; margin: 0; }
+  .login-logo p { font-size: 12px; color: #6B6358; margin: 4px 0 0; }
+  .login-field { margin-bottom: 16px; }
+  .login-field label { display: block; font-size: 12px; font-weight: 600; color: #6B6358; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+  .login-field input {
+    width: 100%; height: 46px; border: 2px solid #E2DDD4; border-radius: 10px;
+    padding: 0 14px; font-size: 15px; font-family: 'Be Vietnam Pro', sans-serif;
+    color: #1A1208; background: #FAF8F3; transition: border 0.15s, box-shadow 0.15s;
+  }
+  .login-field input:focus { outline: none; border-color: #1B4332; background: #fff; box-shadow: 0 0 0 3px rgba(27,67,50,0.12); }
+  .login-field input.error { border-color: #C0392B; background: #FEF0EE; }
+  .login-remember { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; cursor: pointer; user-select: none; }
+  .login-remember input[type=checkbox] { width: 16px; height: 16px; accent-color: #1B4332; cursor: pointer; }
+  .login-remember span { font-size: 13px; color: #6B6358; }
+  .login-btn {
+    width: 100%; height: 48px; background: linear-gradient(135deg, #1B4332, #2D6A4F);
+    color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .login-btn:hover { opacity: 0.9; }
+  .login-btn:active { transform: scale(.98); }
+  .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .login-error {
+    background: #FEF0EE; border: 1px solid #F5B8B2; color: #C0392B;
+    border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 16px;
+    display: none; text-align: center;
+  }
+  .login-error.show { display: block; }
+  .login-footer { text-align: center; margin-top: 20px; font-size: 11px; color: #aaa; }
+  .login-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  /* Logout button in header */
+  #logoutBtn { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-size: 12px; padding: 5px 12px; border-radius: 16px; cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif; transition: background 0.15s; margin-left: 8px; }
+  #logoutBtn:hover { background: rgba(255,255,255,0.25); }
+  #currentUserBadge { font-size: 11px; color: rgba(255,255,255,0.7); margin-left: 8px; }
 </style>
 </head>
 <body>
+
+<!-- ===== LOGIN OVERLAY ===== -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🏠</div>
+      <h2>Nội Thất Tính Tuyết</h2>
+      <p>Công cụ dự kiến báo giá & tính lợi nhuận</p>
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-field">
+      <label>Tên đăng nhập</label>
+      <input type="text" id="loginUsername" placeholder="Nhập tên đăng nhập..." autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPassword').focus()">
+    </div>
+    <div class="login-field">
+      <label>Mật khẩu</label>
+      <input type="password" id="loginPassword" placeholder="Nhập mật khẩu..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <label class="login-remember">
+      <input type="checkbox" id="loginRemember" checked>
+      <span>Ghi nhớ đăng nhập trên thiết bị này</span>
+    </label>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Đăng nhập</button>
+    <div class="login-footer">Nội Thất Tính Tuyết © 2025 · Chỉ dành cho người được cấp quyền</div>
+  </div>
+</div>
+<!-- ===== END LOGIN OVERLAY ===== -->
 
 <div class="header">
   <div class="header-left">
@@ -281,6 +362,8 @@
   </div>
   <div class="header-badge">PRO TOOL</div>
   <div id="syncBadge" style="display:none;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.15);color:#fff;margin-left:8px;"></div>
+  <span id="currentUserBadge"></span>
+  <button id="logoutBtn" onclick="doLogout()" style="display:none;">🔓 Đăng xuất</button>
 </div>
 
 <div class="tabs">
@@ -1697,6 +1780,147 @@ addQuoteRow();
 addNoteRow();
 // Đồng bộ dữ liệu từ Google Sheet khi tải trang
 syncFromSheet();
+
+
+// ============================================================
+// ===== HỆ THỐNG ĐĂNG NHẬP =====
+// CONFIG: Thay đổi AUTH_API_URL bằng URL Google Apps Script của bạn
+// ============================================================
+const AUTH_API_URL = 'https://script.google.com/macros/s/AKfycbwN9TJJKkuvipfEy1uyWeF8R0kZi2G7Tc26wYC0GxxaXTFHzVqDLzLC8kD_tkTHW00/exec';
+// Nếu chưa cài Apps Script, dùng chế độ LOCAL (chỉ 1 tài khoản, mật khẩu trong code):
+// Để chống lộ mật khẩu, hãy triển khai Google Apps Script theo hướng dẫn
+const LOCAL_FALLBACK_USER = 'admin';
+const LOCAL_FALLBACK_PASS = 'nttt2025';   // ← ĐỔI MẬT KHẨU Ở ĐÂY (nếu dùng chế độ local)
+
+const SESSION_KEY  = 'nttt_session';
+const REMEMBER_KEY = 'nttt_remember';
+
+// ---- Kiểm tra session khi tải trang ----
+(function initAuth() {
+  const rem  = tryParseJSON(localStorage.getItem(REMEMBER_KEY));
+  const sess = tryParseJSON(sessionStorage.getItem(SESSION_KEY));
+  const saved = rem || sess;
+  if (saved && saved.user && saved.token) {
+    verifySession(saved.user, saved.token).then(ok => {
+      if (ok) { showApp(saved.user, saved.token); }
+      else    { clearAuth(); showLoginOverlay(); }
+    });
+  } else {
+    showLoginOverlay();
+  }
+})();
+
+function tryParseJSON(s) {
+  try { return JSON.parse(s); } catch(e) { return null; }
+}
+
+function showLoginOverlay() {
+  const overlay = document.getElementById('loginOverlay');
+  overlay.classList.remove('hidden');
+  // Pre-fill saved username if remember was checked
+  const rem = tryParseJSON(localStorage.getItem(REMEMBER_KEY));
+  if (rem && rem.user) {
+    document.getElementById('loginUsername').value = rem.user;
+    document.getElementById('loginPassword').focus();
+  } else {
+    document.getElementById('loginUsername').focus();
+  }
+}
+
+function showApp(user, token) {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  const badge = document.getElementById('currentUserBadge');
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (badge) badge.textContent = '👤 ' + user;
+  if (logoutBtn) logoutBtn.style.display = 'inline-block';
+}
+
+function clearAuth() {
+  localStorage.removeItem(REMEMBER_KEY);
+  sessionStorage.removeItem(SESSION_KEY);
+}
+
+async function verifySession(user, token) {
+  if (!AUTH_API_URL || AUTH_API_URL.includes('PASTE_YOUR')) {
+    // Local fallback: token = btoa(user+':'+pass)
+    return token === btoa(LOCAL_FALLBACK_USER + ':' + LOCAL_FALLBACK_PASS);
+  }
+  try {
+    const res = await fetch(`${AUTH_API_URL}?action=verify&user=${encodeURIComponent(user)}&token=${encodeURIComponent(token)}`);
+    const d = await res.json();
+    return d.ok === true;
+  } catch(e) { return false; }
+}
+
+async function doLogin() {
+  const btn = document.getElementById('loginBtn');
+  const errEl = document.getElementById('loginError');
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const remember = document.getElementById('loginRemember').checked;
+
+  errEl.classList.remove('show');
+  document.getElementById('loginUsername').classList.remove('error');
+  document.getElementById('loginPassword').classList.remove('error');
+
+  if (!username) { document.getElementById('loginUsername').classList.add('error'); showLoginError('Vui lòng nhập tên đăng nhập'); return; }
+  if (!password) { document.getElementById('loginPassword').classList.add('error'); showLoginError('Vui lòng nhập mật khẩu'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="login-spinner"></span>Đang xác thực...';
+
+  try {
+    let token = null;
+    let loginOk = false;
+
+    if (!AUTH_API_URL || AUTH_API_URL.includes('PASTE_YOUR')) {
+      // ---- LOCAL FALLBACK MODE ----
+      if (username === LOCAL_FALLBACK_USER && password === LOCAL_FALLBACK_PASS) {
+        loginOk = true;
+        token = btoa(username + ':' + password);
+      }
+    } else {
+      // ---- GOOGLE APPS SCRIPT MODE ----
+      const res = await fetch(`${AUTH_API_URL}?action=login&user=${encodeURIComponent(username)}&pass=${encodeURIComponent(password)}&api=${encodeURIComponent(API_TOKEN)}`);
+      const d = await res.json();
+      if (d.ok) { loginOk = true; token = d.token; }
+    }
+
+    if (loginOk && token) {
+      const session = { user: username, token };
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      if (remember) localStorage.setItem(REMEMBER_KEY, JSON.stringify(session));
+      else localStorage.removeItem(REMEMBER_KEY);
+      showApp(username, token);
+    } else {
+      showLoginError('Tên đăng nhập hoặc mật khẩu không đúng.');
+      document.getElementById('loginPassword').classList.add('error');
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginPassword').focus();
+    }
+  } catch(e) {
+    showLoginError('Lỗi kết nối. Vui lòng thử lại.');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = 'Đăng nhập';
+}
+
+function showLoginError(msg) {
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '⚠️ ' + msg;
+  errEl.classList.add('show');
+}
+
+function doLogout() {
+  if (!confirm('Bạn có chắc muốn đăng xuất?')) return;
+  clearAuth();
+  location.reload();
+}
+// ============================================================
+// ===== KẾT THÚC HỆ THỐNG ĐĂNG NHẬP =====
+// ============================================================
+
 </script>
 </body>
 </html>
